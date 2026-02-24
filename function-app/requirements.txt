@@ -1,0 +1,12 @@
+# Azure Functions
+azure-functions>=1.18.0
+
+# Document Intelligence (Form Recognizer)
+azure-ai-formrecognizer>=3.3.0
+
+# Azure Storage
+azure-storage-blob>=12.19.0
+
+# Core Azure dependencies
+azure-core>=1.29.0
+azure-identity>=1.15.0
