@@ -84,6 +84,39 @@ variable "output_container_name" {
   default     = "processed"
 }
 
+variable "azure_openai_endpoint" {
+  description = "Azure OpenAI endpoint URL"
+  type        = string
+}
+
+variable "azure_openai_api_key" {
+  description = "Azure OpenAI API key"
+  type        = string
+  sensitive   = true
+}
+
+variable "azure_openai_deployment_name" {
+  description = "Azure OpenAI deployment name (e.g., 04-mini)"
+  type        = string
+}
+
+variable "azure_openai_api_version" {
+  description = "Azure OpenAI API version"
+  type        = string
+  default     = "2025-04-16"
+}
+
+variable "azure_openai_id" {
+  description = "Resource ID of Azure OpenAI service"
+  type        = string
+}
+
+variable "model_analysis_container_name" {
+  description = "Name of the blob container for model analysis results"
+  type        = string
+  default     = "model-analysis-results"
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

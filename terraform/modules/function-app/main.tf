@@ -68,9 +68,16 @@ resource "azurerm_linux_function_app" "processor" {
     "DOCUMENT_INTELLIGENCE_ENDPOINT" = var.doc_intelligence_endpoint
     "DOCUMENT_INTELLIGENCE_KEY"      = var.doc_intelligence_key
 
+    # Azure OpenAI Configuration
+    "AZURE_OPENAI_ENDPOINT"        = var.azure_openai_endpoint
+    "AZURE_OPENAI_API_KEY"         = var.azure_openai_api_key
+    "AZURE_OPENAI_DEPLOYMENT_NAME" = var.azure_openai_deployment_name
+    "AZURE_OPENAI_API_VERSION"     = var.azure_openai_api_version
+
     # Container names
-    "INPUT_CONTAINER_NAME"  = var.input_container_name
-    "OUTPUT_CONTAINER_NAME" = var.output_container_name
+    "INPUT_CONTAINER_NAME"           = var.input_container_name
+    "OUTPUT_CONTAINER_NAME"          = var.output_container_name
+    "MODEL_ANALYSIS_CONTAINER_NAME"  = var.model_analysis_container_name
   }
 
   tags = var.tags
@@ -87,5 +94,12 @@ resource "azurerm_role_assignment" "function_storage_blob_contributor" {
 resource "azurerm_role_assignment" "function_cognitive_user" {
   scope                = var.doc_intelligence_id
   role_definition_name = "Cognitive Services User"
+  principal_id         = azurerm_linux_function_app.processor.identity[0].principal_id
+}
+
+# RBAC: Grant Function App access to Azure OpenAI
+resource "azurerm_role_assignment" "function_cognitive_openai_user" {
+  scope                = var.azure_openai_id
+  role_definition_name = "Cognitive Services OpenAI User"
   principal_id         = azurerm_linux_function_app.processor.identity[0].principal_id
 }
