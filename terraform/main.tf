@@ -37,7 +37,7 @@ data "azurerm_user_assigned_identity" "github_actions" {
 
 # Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-${var.project_name}"
+  name     = "${var.unique_variable_name_suffix}-rg-${var.project_name}"
   location = var.location
 
   tags = var.tags
@@ -47,7 +47,7 @@ resource "azurerm_resource_group" "rg" {
 module "storage" {
   source = "./modules/storage"
 
-  storage_account_name = "dmst${var.project_name}"
+  storage_account_name = "${var.unique_variable_name_suffix}${var.project_name}"
   resource_group_name  = azurerm_resource_group.rg.name
   location             = var.location
 
@@ -58,7 +58,7 @@ module "storage" {
 module "document_intelligence" {
   source = "./modules/document-intelligence"
 
-  name                = "doc-intel-${var.project_name}"
+  name                = "${var.unique_variable_name_suffix}-doc-intel-${var.project_name}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
 
@@ -69,10 +69,10 @@ module "document_intelligence" {
 module "function_app" {
   source = "./modules/function-app"
 
-  function_app_name     = "func-${var.project_name}"
-  service_plan_name     = "plan-${var.project_name}"
-  function_storage_name = "stfunc${var.project_name}"
-  app_insights_name     = "appi-${var.project_name}"
+  function_app_name     = "${var.unique_variable_name_suffix}-func-${var.project_name}"
+  service_plan_name     = "${var.unique_variable_name_suffix}-plan-${var.project_name}"
+  function_storage_name = "${var.unique_variable_name_suffix}stfunc${var.project_name}"
+  app_insights_name     = "${var.unique_variable_name_suffix}-appi-${var.project_name}"
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
@@ -98,3 +98,9 @@ module "function_app" {
   ]
 }
 
+# Role Assignment for being able to upload blobs
+resource "azurerm_role_assignment" "blob_contrib" {
+  scope = module.storage.storage_account_id
+  role_definition_name = "Storage Blob Data Contributor" 
+  principal_id         = data.azurerm_client_config.current.object_id 
+}

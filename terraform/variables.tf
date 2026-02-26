@@ -47,3 +47,13 @@ variable "nonprod_acr_resource_group" {
   description = "Resource group of the non-prod ACR"
   type        = string
 }
+
+variable "unique_variable_name_suffix" {
+  description = "Unique suffix for globally unique Azure resource names (must match bootstrap, max 4 chars due to Key Vault 24-char limit)"
+  type        = string
+
+  validation {
+    condition     = length(var.unique_variable_name_suffix) >= 1 && length(var.unique_variable_name_suffix) <= 4
+    error_message = "unique_variable_name_suffix must be 1-4 characters (Key Vault names have a 24-character limit)."
+  }
+}
