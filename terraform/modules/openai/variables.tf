@@ -20,31 +20,31 @@ variable "sku_name" {
 }
 
 variable "deploy_gpt4" {
-  description = "Deploy GPT-4 model"
+  description = "Deploy chat completion model"
   type        = bool
   default     = true
 }
 
 variable "gpt4_deployment_name" {
-  description = "Name of the GPT-4 deployment"
+  description = "Name of the chat model deployment"
   type        = string
-  default     = "gpt-4"
+  default     = "gpt-5-mini"
 }
 
 variable "gpt4_model_name" {
-  description = "GPT-4 model name"
+  description = "Chat completion model name"
   type        = string
-  default     = "gpt-4"
+  default     = "gpt-5-mini"
 }
 
 variable "gpt4_model_version" {
-  description = "GPT-4 model version"
+  description = "Chat completion model version"
   type        = string
-  default     = "turbo-2024-04-09"
+  default     = "2025-08-07"
 }
 
 variable "gpt4_capacity" {
-  description = "GPT-4 capacity (tokens per minute / 1000)"
+  description = "Chat model capacity (tokens per minute / 1000)"
   type        = number
   default     = 10
 }
@@ -58,19 +58,19 @@ variable "deploy_embedding" {
 variable "embedding_deployment_name" {
   description = "Name of the embedding deployment"
   type        = string
-  default     = "text-embedding-ada-002"
+  default     = "text-embedding-3-small"
 }
 
 variable "embedding_model_name" {
   description = "Embedding model name"
   type        = string
-  default     = "text-embedding-ada-002"
+  default     = "text-embedding-3-small"
 }
 
 variable "embedding_model_version" {
   description = "Embedding model version"
   type        = string
-  default     = "2"
+  default     = "1"
 }
 
 variable "embedding_capacity" {

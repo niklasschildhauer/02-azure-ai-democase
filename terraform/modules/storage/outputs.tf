@@ -29,3 +29,8 @@ output "processed_container_name" {
   description = "Name of the processed data container"
   value       = azurerm_storage_container.processed.name
 }
+
+output "terms_container_name" {
+  description = "Name of the terms and conditions container"
+  value       = azurerm_storage_container.terms_and_conditions.name
+}

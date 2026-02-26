@@ -49,6 +49,12 @@ variable "processed_container_name" {
   default     = "processed-data"
 }
 
+variable "terms_container_name" {
+  description = "Name of the terms and conditions blob container"
+  type        = string
+  default     = "terms-and-conditions"
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

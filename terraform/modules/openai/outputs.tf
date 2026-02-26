@@ -20,7 +20,7 @@ output "primary_access_key" {
 }
 
 output "gpt4_deployment_name" {
-  description = "Name of the GPT-4 deployment"
+  description = "Name of the chat model deployment"
   value       = var.deploy_gpt4 ? azurerm_cognitive_deployment.gpt4[0].name : null
 }
 

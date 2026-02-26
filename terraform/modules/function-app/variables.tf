@@ -84,6 +84,66 @@ variable "output_container_name" {
   default     = "processed"
 }
 
+variable "openai_endpoint" {
+  description = "Azure OpenAI endpoint URL"
+  type        = string
+  default     = ""
+}
+
+variable "openai_chat_deployment" {
+  description = "Azure OpenAI chat model deployment name"
+  type        = string
+  default     = ""
+}
+
+variable "openai_embedding_deployment" {
+  description = "Azure OpenAI embedding model deployment name"
+  type        = string
+  default     = ""
+}
+
+variable "openai_id" {
+  description = "Resource ID of Azure OpenAI service"
+  type        = string
+  default     = ""
+}
+
+variable "search_endpoint" {
+  description = "Azure AI Search endpoint URL"
+  type        = string
+  default     = ""
+}
+
+variable "search_index_name" {
+  description = "Name of the search index for T&C documents"
+  type        = string
+  default     = "terms-and-conditions-index"
+}
+
+variable "search_id" {
+  description = "Resource ID of Azure AI Search service"
+  type        = string
+  default     = ""
+}
+
+variable "bot_identity_id" {
+  description = "Resource ID of the bot's user-assigned managed identity"
+  type        = string
+  default     = ""
+}
+
+variable "bot_identity_client_id" {
+  description = "Client ID of the bot's managed identity"
+  type        = string
+  default     = ""
+}
+
+variable "bot_identity_tenant_id" {
+  description = "Tenant ID of the bot's managed identity"
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

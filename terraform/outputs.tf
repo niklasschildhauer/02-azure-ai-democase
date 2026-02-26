@@ -53,6 +53,52 @@ output "doc_intelligence_key" {
   sensitive   = true
 }
 
+# OpenAI Outputs
+output "openai_endpoint" {
+  description = "Endpoint for Azure OpenAI service"
+  value       = module.openai.endpoint
+}
+
+output "openai_name" {
+  description = "Name of the Azure OpenAI service"
+  value       = module.openai.name
+}
+
+# Search Outputs
+output "search_endpoint" {
+  description = "Endpoint for Azure AI Search service"
+  value       = module.search.endpoint
+}
+
+output "search_name" {
+  description = "Name of the Azure AI Search service"
+  value       = module.search.name
+}
+
+output "search_admin_key" {
+  description = "Admin key for Azure AI Search"
+  value       = module.search.primary_key
+  sensitive   = true
+}
+
+# Bot Service Outputs
+output "bot_name" {
+  description = "Name of the Bot Service"
+  value       = module.bot_service.name
+}
+
+# Terms and Conditions Container
+output "terms_container_name" {
+  description = "Name of the terms and conditions blob container"
+  value       = module.storage.terms_container_name
+}
+
+# Document Intelligence ID (for search setup script)
+output "doc_intelligence_id" {
+  description = "Resource ID of Document Intelligence service"
+  value       = module.document_intelligence.id
+}
+
 # Summary output for easy reference
 output "deployment_summary" {
   description = "Summary of deployed resources"
@@ -61,6 +107,10 @@ output "deployment_summary" {
     location             = azurerm_resource_group.rg.location
     storage_account      = module.storage.storage_account_name
     claims_container     = module.storage.claims_container_name
+    terms_container      = module.storage.terms_container_name
     doc_intelligence     = module.document_intelligence.name
+    openai               = module.openai.name
+    search               = module.search.name
+    bot_service          = module.bot_service.name
   }
 }
