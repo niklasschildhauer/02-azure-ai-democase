@@ -58,8 +58,8 @@ resource "azurerm_linux_function_app" "processor" {
   }
 
   app_settings = {
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
-    "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
+    "FUNCTIONS_WORKER_RUNTIME"        = "python"
+    "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
     "PYTHON_ENABLE_WORKER_EXTENSIONS" = "1"
 
     # Data Storage Account (where claims PDFs are stored)
@@ -107,7 +107,6 @@ resource "azurerm_role_assignment" "function_cognitive_user" {
 
 # RBAC: Grant Function App access to Azure OpenAI
 resource "azurerm_role_assignment" "function_openai_user" {
-  count                = var.openai_id != "" ? 1 : 0
   scope                = var.openai_id
   role_definition_name = "Cognitive Services OpenAI User"
   principal_id         = azurerm_linux_function_app.processor.identity[0].principal_id
@@ -115,7 +114,6 @@ resource "azurerm_role_assignment" "function_openai_user" {
 
 # RBAC: Grant Function App access to Azure AI Search
 resource "azurerm_role_assignment" "function_search_reader" {
-  count                = var.search_id != "" ? 1 : 0
   scope                = var.search_id
   role_definition_name = "Search Index Data Reader"
   principal_id         = azurerm_linux_function_app.processor.identity[0].principal_id

@@ -103,14 +103,14 @@ output "doc_intelligence_id" {
 output "deployment_summary" {
   description = "Summary of deployed resources"
   value = {
-    resource_group       = azurerm_resource_group.rg.name
-    location             = azurerm_resource_group.rg.location
-    storage_account      = module.storage.storage_account_name
-    claims_container     = module.storage.claims_container_name
-    terms_container      = module.storage.terms_container_name
-    doc_intelligence     = module.document_intelligence.name
-    openai               = module.openai.name
-    search               = module.search.name
-    bot_service          = module.bot_service.name
+    resource_group   = azurerm_resource_group.rg.name
+    location         = azurerm_resource_group.rg.location
+    storage_account  = module.storage.storage_account_name
+    claims_container = module.storage.claims_container_name
+    terms_container  = module.storage.terms_container_name
+    doc_intelligence = module.document_intelligence.name
+    openai           = module.openai.name
+    search           = module.search.name
+    bot_service      = module.bot_service.name
   }
 }
