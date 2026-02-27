@@ -154,22 +154,20 @@ resource "azurerm_user_assigned_identity" "github_actions" {
 
 # Federated credential for pull requests (plan operations)
 resource "azurerm_federated_identity_credential" "github_pr" {
-  name                = "github-pr"
-  resource_group_name = azurerm_resource_group.shared.name
-  parent_id           = azurerm_user_assigned_identity.github_actions.id
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = "https://token.actions.githubusercontent.com"
-  subject             = "repo:${var.github_org}/${var.github_repo}:pull_request"
+  name      = "github-pr"
+  parent_id = azurerm_user_assigned_identity.github_actions.id
+  audience  = ["api://AzureADTokenExchange"]
+  issuer    = "https://token.actions.githubusercontent.com"
+  subject   = "repo:${var.github_org}/${var.github_repo}:pull_request"
 }
 
 # Federated credential for main branch (apply operations)
 resource "azurerm_federated_identity_credential" "github_main" {
-  name                = "github-main"
-  resource_group_name = azurerm_resource_group.shared.name
-  parent_id           = azurerm_user_assigned_identity.github_actions.id
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = "https://token.actions.githubusercontent.com"
-  subject             = "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/main"
+  name      = "github-main"
+  parent_id = azurerm_user_assigned_identity.github_actions.id
+  audience  = ["api://AzureADTokenExchange"]
+  issuer    = "https://token.actions.githubusercontent.com"
+  subject   = "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/main"
 }
 
 ###############################################################################

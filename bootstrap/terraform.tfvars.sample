@@ -1,9 +1,0 @@
-# Bootstrap Configuration — Azure AI Demo Case
-# Copy to terraform.tfvars and fill in your values
-
-subscription_id             = "<your-subscription-id>"
-location                    = "germanywestcentral"
-project_name                = "ccworkshop"
-github_org                  = "<your-github-org>"
-github_repo                 = "02-azure-ai-democase"
-unique_variable_name_suffix = "<your-unique-suffix>"
