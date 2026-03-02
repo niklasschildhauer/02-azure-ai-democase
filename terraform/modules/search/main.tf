@@ -7,7 +7,8 @@ resource "azurerm_search_service" "search" {
   location            = var.location
   sku                 = var.sku
 
-  semantic_search_sku = var.semantic_search_sku
+  semantic_search_sku          = var.semantic_search_sku
+  authentication_failure_mode  = "http401WithBearerChallenge"
 
   identity {
     type = "SystemAssigned"
