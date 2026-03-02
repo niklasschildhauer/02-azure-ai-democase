@@ -35,7 +35,7 @@ data "azurerm_user_assigned_identity" "github_actions" {
   resource_group_name = var.nonprod_acr_resource_group # Same RG as bootstrap resources
 }
 
-# Resource Group
+# # Resource Group
 resource "azurerm_resource_group" "rg" {
   name     = "${var.unique_variable_name_suffix}-rg-${var.project_name}"
   location = var.location
@@ -120,7 +120,7 @@ module "ai_services" {
 
   # Deploy GPT-4 Turbo
   deploy_gpt4            = true
-  gpt4_deployment_name   = "04-mini"
+  gpt4_deployment_name   = "o4-mini"
   gpt4_model_name        = "o4-mini"
   gpt4_model_version     = "2025-04-16"
   gpt4_capacity          = 10
