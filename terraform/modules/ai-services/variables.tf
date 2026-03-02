@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of the Document Intelligence service"
+  description = "Name of the AI Services resource"
   type        = string
 }
 
@@ -14,7 +14,7 @@ variable "location" {
 }
 
 variable "sku_name" {
-  description = "SKU for Document Intelligence"
+  description = "SKU for AI Services"
   type        = string
   default     = "S0"
 }

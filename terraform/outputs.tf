@@ -99,6 +99,12 @@ output "doc_intelligence_id" {
   value       = module.document_intelligence.id
 }
 
+# AI Services Outputs
+output "ai_services_endpoint" {
+  description = "Endpoint for Azure AI Services (multi-service)"
+  value       = module.ai_services.endpoint
+}
+
 # Summary output for easy reference
 output "deployment_summary" {
   description = "Summary of deployed resources"

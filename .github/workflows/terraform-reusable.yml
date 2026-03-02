@@ -180,7 +180,7 @@ jobs:
           SEARCH_ADMIN_KEY=$(terraform output -raw search_admin_key)
           STORAGE_CONN=$(terraform output -raw storage_connection_string)
           OPENAI_ENDPOINT=$(terraform output -raw openai_endpoint)
-          DOC_INTEL_ENDPOINT=$(terraform output -raw doc_intelligence_endpoint)
+          AI_SERVICES_ENDPOINT=$(terraform output -raw ai_services_endpoint)
           TERMS_CONTAINER=$(terraform output -raw terms_container_name)
 
           echo "::add-mask::${SEARCH_ADMIN_KEY}"
@@ -191,7 +191,7 @@ jobs:
           export AZURE_STORAGE_CONNECTION_STRING="${STORAGE_CONN}"
           export AZURE_STORAGE_CONTAINER="${TERMS_CONTAINER}"
           export AZURE_OPENAI_ENDPOINT="${OPENAI_ENDPOINT}"
-          export AZURE_DOC_INTELLIGENCE_ENDPOINT="${DOC_INTEL_ENDPOINT}"
+          export AZURE_AI_SERVICES_ENDPOINT="${AI_SERVICES_ENDPOINT}"
 
           cd ${{ github.workspace }}
           python search-setup/setup_search_index.py

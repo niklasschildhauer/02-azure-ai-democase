@@ -59,6 +59,17 @@ module "document_intelligence" {
   tags = var.tags
 }
 
+# AI Services Module (multi-service, required for skillset billing)
+module "ai_services" {
+  source = "./modules/ai-services"
+
+  name                = "${var.unique_variable_name_suffix}-ais-${var.project_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.location
+
+  tags = var.tags
+}
+
 # OpenAI Module
 module "openai" {
   source = "./modules/openai"
@@ -183,6 +194,13 @@ resource "azurerm_role_assignment" "search_openai_user" {
 # RBAC: Search -> Document Intelligence (Document Layout skill)
 resource "azurerm_role_assignment" "search_doc_intel_user" {
   scope                = module.document_intelligence.id
+  role_definition_name = "Cognitive Services User"
+  principal_id         = module.search.principal_id
+}
+
+# RBAC: Search -> AI Services (skillset billing)
+resource "azurerm_role_assignment" "search_ai_services_user" {
+  scope                = module.ai_services.id
   role_definition_name = "Cognitive Services User"
   principal_id         = module.search.principal_id
 }

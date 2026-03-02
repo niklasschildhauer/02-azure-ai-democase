@@ -11,13 +11,13 @@ Usage:
         --storage-container terms-and-conditions \
         --openai-endpoint https://<name>.openai.azure.com \
         --openai-embedding-deployment text-embedding-3-small \
-        --doc-intelligence-endpoint https://<name>.cognitiveservices.azure.com
+        --ai-services-endpoint https://<name>.cognitiveservices.azure.com
 
     All arguments can also be set via environment variables:
         AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_ADMIN_KEY,
         AZURE_STORAGE_CONNECTION_STRING, AZURE_STORAGE_CONTAINER,
         AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
-        AZURE_DOC_INTELLIGENCE_ENDPOINT
+        AZURE_AI_SERVICES_ENDPOINT
 """
 
 import argparse
@@ -69,7 +69,7 @@ def parse_args():
         default=os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "text-embedding-3-small"),
     )
     parser.add_argument(
-        "--doc-intelligence-endpoint", default=os.getenv("AZURE_DOC_INTELLIGENCE_ENDPOINT")
+        "--ai-services-endpoint", default=os.getenv("AZURE_AI_SERVICES_ENDPOINT")
     )
     args = parser.parse_args()
 
@@ -78,7 +78,7 @@ def parse_args():
         ("search_admin_key", args.search_admin_key),
         ("storage_connection_string", args.storage_connection_string),
         ("openai_endpoint", args.openai_endpoint),
-        ("doc_intelligence_endpoint", args.doc_intelligence_endpoint),
+        ("ai_services_endpoint", args.ai_services_endpoint),
     ]
     missing = [name for name, val in required if not val]
     if missing:
@@ -92,6 +92,14 @@ def rest_headers(admin_key):
         "Content-Type": "application/json",
         "api-key": admin_key,
     }
+
+
+def raise_for_status(resp, context):
+    """Print response body on error before raising, for easier debugging."""
+    if not resp.ok:
+        print(f"  ERROR {resp.status_code} on {context}:")
+        print(f"  {resp.text}")
+    resp.raise_for_status()
 
 
 def create_or_update_data_source(args):
@@ -108,7 +116,7 @@ def create_or_update_data_source(args):
         "container": {"name": args.storage_container},
     }
     resp = requests.put(url, headers=rest_headers(args.search_admin_key), json=body)
-    resp.raise_for_status()
+    raise_for_status(resp, "data source")
     print(f"  Data source '{DATA_SOURCE_NAME}' created/updated successfully")
 
 
@@ -198,7 +206,7 @@ def create_or_update_skillset(args):
         "description": "Skillset for T&C document processing: layout analysis, chunking, embedding",
         "skills": [
             {
-                "@odata.type": "#Microsoft.Skills.Util.DocumentLayoutSkill",
+                "@odata.type": "#Microsoft.Skills.Util.DocumentIntelligenceLayoutSkill",
                 "name": "document-layout",
                 "description": "Extract structured content from PDFs using Document Intelligence",
                 "context": "/document",
@@ -244,8 +252,8 @@ def create_or_update_skillset(args):
         ],
         "cognitiveServices": {
             "@odata.type": "#Microsoft.Azure.Search.AIServicesByIdentity",
-            "description": "Use managed identity for Document Intelligence access",
-            "subdomainUrl": args.doc_intelligence_endpoint,
+            "description": "AI Services billing via managed identity",
+            "subdomainUrl": args.ai_services_endpoint,
         },
         "indexProjections": {
             "selectors": [
@@ -266,7 +274,7 @@ def create_or_update_skillset(args):
         },
     }
     resp = requests.put(url, headers=rest_headers(args.search_admin_key), json=body)
-    resp.raise_for_status()
+    raise_for_status(resp, "skillset")
     print(f"  Skillset '{SKILLSET_NAME}' created/updated successfully")
 
 
@@ -302,7 +310,7 @@ def create_or_update_indexer(args):
         },
     }
     resp = requests.put(url, headers=rest_headers(args.search_admin_key), json=body)
-    resp.raise_for_status()
+    raise_for_status(resp, "indexer")
     print(f"  Indexer '{INDEXER_NAME}' created/updated successfully")
 
 
@@ -314,7 +322,7 @@ def run_indexer(args):
         f"?api-version={SEARCH_API_VERSION}"
     )
     resp = requests.post(url, headers=rest_headers(args.search_admin_key))
-    resp.raise_for_status()
+    raise_for_status(resp, "run indexer")
     print(f"  Indexer '{INDEXER_NAME}' triggered successfully")
 
 
