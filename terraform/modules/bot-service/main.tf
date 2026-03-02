@@ -20,10 +20,3 @@ resource "azurerm_bot_service_azure_bot" "bot" {
 
   tags = var.tags
 }
-
-# Web Chat Channel
-resource "azurerm_bot_channel_web_chat" "webchat" {
-  bot_name            = azurerm_bot_service_azure_bot.bot.name
-  resource_group_name = var.resource_group_name
-  location            = azurerm_bot_service_azure_bot.bot.location
-}
