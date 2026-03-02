@@ -127,7 +127,7 @@ def create_or_update_index(args):
     index_client = SearchIndexClient(endpoint=args.search_endpoint, credential=credential)
 
     fields = [
-        SimpleField(name="chunk_id", type=SearchFieldDataType.String, key=True, filterable=True),
+        SearchField(name="chunk_id", type=SearchFieldDataType.String, key=True, filterable=True, analyzer_name="keyword"),
         SimpleField(name="parent_id", type=SearchFieldDataType.String, filterable=True),
         SearchableField(
             name="title", type=SearchFieldDataType.String, filterable=True, sortable=True
