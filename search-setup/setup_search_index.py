@@ -160,7 +160,7 @@ def create_or_update_index(args):
                 parameters=AzureOpenAIVectorizerParameters(
                     resource_url=args.openai_endpoint,
                     deployment_name=args.openai_embedding_deployment,
-                    model_name="text-embedding-3-small",
+                    model_name="text-embedding-ada-002",
                 ),
             )
         ],
@@ -241,7 +241,7 @@ def create_or_update_skillset(args):
                 "context": "/document/markdown_document/sections/*/chunks/*",
                 "resourceUri": args.openai_endpoint,
                 "deploymentId": args.openai_embedding_deployment,
-                "modelName": "text-embedding-3-small",
+                "modelName": "text-embedding-ada-002",
                 "inputs": [
                     {"name": "text", "source": "/document/markdown_document/sections/*/chunks/*"}
                 ],
