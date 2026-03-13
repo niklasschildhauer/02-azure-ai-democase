@@ -20,6 +20,10 @@ terraform {
       source  = "hashicorp/local"
       version = "~> 2.5"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -32,6 +36,11 @@ provider "azurerm" {
   }
   subscription_id     = var.subscription_id
   storage_use_azuread = true
+}
+
+provider "github" {
+  owner = var.github_org
+  token = var.github_token # Can also use GITHUB_TOKEN env var
 }
 
 ###############################################################################
@@ -70,6 +79,13 @@ variable "github_repo" {
 variable "unique_variable_name_suffix" {
   description = "Unique suffix for globally unique Azure resource names (e.g. your initials)"
   type        = string
+}
+
+variable "github_token" {
+  description = "GitHub PAT with 'repo' scope. Can also use GITHUB_TOKEN env var."
+  type        = string
+  sensitive   = true
+  default     = null
 }
 
 locals {
@@ -196,6 +212,40 @@ resource "azurerm_role_assignment" "subscription_uaa" {
 }
 
 ###############################################################################
+# GitHub Actions Variables
+###############################################################################
+
+resource "github_actions_variable" "azure_client_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_CLIENT_ID"
+  value         = azurerm_user_assigned_identity.github_actions.client_id
+}
+
+resource "github_actions_variable" "azure_tenant_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_TENANT_ID"
+  value         = data.azurerm_client_config.current.tenant_id
+}
+
+resource "github_actions_variable" "azure_subscription_id" {
+  repository    = var.github_repo
+  variable_name = "AZURE_SUBSCRIPTION_ID"
+  value         = data.azurerm_subscription.current.subscription_id
+}
+
+resource "github_actions_variable" "storage_account_name" {
+  repository    = var.github_repo
+  variable_name = "STORAGE_ACCOUNT_NAME"
+  value         = azurerm_storage_account.tfstate.name
+}
+
+resource "github_actions_variable" "unique_suffix" {
+  repository    = var.github_repo
+  variable_name = "UNIQUE_SUFFIX"
+  value         = var.unique_variable_name_suffix
+}
+
+###############################################################################
 # Output File
 ###############################################################################
 
@@ -258,19 +308,20 @@ output "github_actions_configuration" {
   value       = <<-EOT
 
     ============================================================
-    GitHub Configuration Instructions
+    GitHub Configuration - AUTO-CONFIGURED
     ============================================================
 
-    No GitHub Environments needed (single environment, repo-level config).
+    The following variables have been automatically created
+    in ${var.github_org}/${var.github_repo}:
 
-    1. REPOSITORY SECRETS (Settings -> Secrets -> Actions):
-       AZURE_TENANT_ID:       ${data.azurerm_client_config.current.tenant_id}
-       AZURE_SUBSCRIPTION_ID: ${data.azurerm_subscription.current.subscription_id}
-       AZURE_CLIENT_ID:       ${azurerm_user_assigned_identity.github_actions.client_id}
+    VARIABLES:
+      - AZURE_CLIENT_ID
+      - AZURE_TENANT_ID
+      - AZURE_SUBSCRIPTION_ID
+      - STORAGE_ACCOUNT_NAME
+      - UNIQUE_SUFFIX
 
-    2. REPOSITORY VARIABLES (Settings -> Variables -> Actions):
-       STORAGE_ACCOUNT_NAME:  ${azurerm_storage_account.tfstate.name}
-       UNIQUE_SUFFIX:         <your unique prefix, e.g. "ft">
+    Verify at: https://github.com/${var.github_org}/${var.github_repo}/settings/variables/actions
 
     ============================================================
   EOT
