@@ -1,0 +1,20 @@
+[project]
+name = "claims-generator"
+version = "0.1.0"
+description = ""
+requires-python = ">=3.14,<4"
+dependencies = [
+    "reportlab (>=4.4.10,<5.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{include = "generate_claims"}]
+
+
+[project.scripts]
+generate_claims = "generate_claims.generate_claim_pdfs:main"

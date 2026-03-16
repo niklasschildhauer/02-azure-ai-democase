@@ -429,9 +429,10 @@ suspicious = {
 }
 
 
-if __name__ == '__main__':
+def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     claims_dir = os.path.join(script_dir, 'sample-data', 'claims')
+    os.makedirs(claims_dir, exist_ok=True)
 
     print("\n" + "="*70)
     print("GENERATING INSURANCE CLAIM FORMS")
@@ -453,3 +454,7 @@ if __name__ == '__main__':
     print("   • Recent policy (Nov 2025, claim Feb 2026)")
     print("   • Vendor 'QuickFix Auto Services' appears in multiple claims")
     print("="*70 + "\n")
+
+
+if __name__ == '__main__':
+    main()
