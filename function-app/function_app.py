@@ -7,6 +7,7 @@ Azure Function App - Document Intelligence Processor + T&C RAG Chatbot
 import json
 import logging
 import os
+import threading
 import traceback
 
 import azure.functions as func
@@ -363,11 +364,58 @@ def get_rag_response(user_message: str) -> str:
     return response.choices[0].message.content
 
 
+def _send_bot_reply(service_url, conversation_id, reply):
+    """Send a reply activity to the Bot Framework connector."""
+    import requests
+
+    reply_url = (
+        f"{service_url.rstrip('/')}/v3/conversations/{conversation_id}/activities"
+    )
+    try:
+        credential = get_bot_credential()
+        token = credential.get_token(
+            "https://api.botframework.com/.default"
+        ).token
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+        resp = requests.post(reply_url, json=reply, headers=headers, timeout=30)
+        resp.raise_for_status()
+    except Exception as e:
+        logging.error(f"Failed to send reply via Bot service: {e}")
+
+
+def _process_and_reply(body, user_text):
+    """Process RAG query and send reply via Bot Framework (runs in background thread)."""
+    try:
+        answer = get_rag_response(user_text)
+    except Exception:
+        logging.error(f"RAG pipeline error: {traceback.format_exc()}")
+        answer = "I'm sorry, I encountered an error processing your question. Please try again."
+
+    reply = {
+        "type": "message",
+        "from": body.get("recipient", {}),
+        "recipient": body.get("from", {}),
+        "conversation": body.get("conversation", {}),
+        "text": answer,
+        "replyToId": body.get("id"),
+    }
+
+    service_url = body.get("serviceUrl", "")
+    conversation_id = body.get("conversation", {}).get("id", "")
+    if service_url and conversation_id:
+        _send_bot_reply(service_url, conversation_id, reply)
+
+
 @app.route(route="messages", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
 async def messages(req: func.HttpRequest) -> func.HttpResponse:
     """
     HTTP-triggered endpoint for Bot Framework messages.
     Handles the Activity protocol for Web Chat and other Bot channels.
+    Returns 200 immediately to avoid Bot Framework's 15s webhook timeout.
+    RAG processing and reply are handled in a background thread.
     """
     try:
         body = req.get_json()
@@ -383,50 +431,20 @@ async def messages(req: func.HttpRequest) -> func.HttpResponse:
 
         logging.info(f"Received message: {user_text[:100]}")
 
-        try:
-            answer = get_rag_response(user_text)
-        except Exception as e:
-            logging.error(f"RAG pipeline error: {traceback.format_exc()}")
-            answer = "I'm sorry, I encountered an error processing your question. Please try again."
-
-        reply = {
-            "type": "message",
-            "from": body.get("recipient", {}),
-            "recipient": body.get("from", {}),
-            "conversation": body.get("conversation", {}),
-            "text": answer,
-            "replyToId": body.get("id"),
-        }
-
-        # Send reply via Bot Framework service URL
-        service_url = body.get("serviceUrl", "")
-        conversation_id = body.get("conversation", {}).get("id", "")
-
-        if service_url and conversation_id:
-            import requests
-
-            reply_url = (
-                f"{service_url.rstrip('/')}/v3/conversations/{conversation_id}/activities"
-            )
-            try:
-                credential = get_bot_credential()
-                token = credential.get_token(
-                    "https://api.botframework.com/.default"
-                ).token
-                headers = {
-                    "Authorization": f"Bearer {token}",
-                    "Content-Type": "application/json",
-                }
-                resp = requests.post(reply_url, json=reply, headers=headers, timeout=30)
-                resp.raise_for_status()
-            except Exception as e:
-                logging.error(f"Failed to send reply via Bot service: {e}")
+        # Process in background thread to return 200 within Bot Framework's 15s timeout
+        thread = threading.Thread(
+            target=_process_and_reply,
+            args=(body, user_text),
+        )
+        thread.start()
 
         return func.HttpResponse(status_code=200)
 
     elif activity_type == "conversationUpdate":
         members_added = body.get("membersAdded", [])
         bot_id = body.get("recipient", {}).get("id", "")
+        service_url = body.get("serviceUrl", "")
+        conversation_id = body.get("conversation", {}).get("id", "")
         for member in members_added:
             if member.get("id") != bot_id:
                 welcome = {
@@ -439,27 +457,8 @@ async def messages(req: func.HttpRequest) -> func.HttpResponse:
                         "Ask me any question about your insurance policy terms and conditions."
                     ),
                 }
-
-                service_url = body.get("serviceUrl", "")
-                conversation_id = body.get("conversation", {}).get("id", "")
                 if service_url and conversation_id:
-                    import requests
-
-                    reply_url = f"{service_url.rstrip('/')}/v3/conversations/{conversation_id}/activities"
-                    try:
-                        credential = get_bot_credential()
-                        token = credential.get_token(
-                            "https://api.botframework.com/.default"
-                        ).token
-                        headers = {
-                            "Authorization": f"Bearer {token}",
-                            "Content-Type": "application/json",
-                        }
-                        requests.post(
-                            reply_url, json=welcome, headers=headers, timeout=30
-                        )
-                    except Exception as e:
-                        logging.error(f"Failed to send welcome message: {e}")
+                    _send_bot_reply(service_url, conversation_id, welcome)
 
         return func.HttpResponse(status_code=200)
 
