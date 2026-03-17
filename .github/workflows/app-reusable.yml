@@ -58,7 +58,7 @@ jobs:
           echo "Deploying to: ${FUNCTION_APP_NAME}"
           for attempt in 1 2 3; do
             echo "Deployment attempt ${attempt}..."
-            if func azure functionapp publish "${FUNCTION_APP_NAME}" --build remote; then
+            if func azure functionapp publish "${FUNCTION_APP_NAME}" --python --build remote; then
               echo "Deployment succeeded on attempt ${attempt}"
               exit 0
             fi
