@@ -322,6 +322,9 @@ def run_indexer(args):
         f"?api-version={SEARCH_API_VERSION}"
     )
     resp = requests.post(url, headers=rest_headers(args.search_admin_key))
+    if resp.status_code == 409:
+        print(f"  Indexer '{INDEXER_NAME}' is already running — skipping explicit run")
+        return
     raise_for_status(resp, "run indexer")
     print(f"  Indexer '{INDEXER_NAME}' triggered successfully")
 
