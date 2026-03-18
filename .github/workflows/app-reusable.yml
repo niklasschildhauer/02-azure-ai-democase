@@ -39,10 +39,10 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Setup Python 3.11
+      - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Azure Functions Core Tools v4
         run: |
@@ -52,23 +52,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y azure-functions-core-tools-4
 
+      - name: Install Dependencies
+        run: pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+
       - name: Deploy Function App
         run: |
           FUNCTION_APP_NAME="${{ vars.UNIQUE_SUFFIX }}-func-${{ vars.PROJECT_NAME || 'frauddetect' }}"
           echo "Deploying to: ${FUNCTION_APP_NAME}"
-          for attempt in 1 2 3; do
-            echo "Deployment attempt ${attempt}..."
-            if func azure functionapp publish "${FUNCTION_APP_NAME}" --python --build remote; then
-              echo "Deployment succeeded on attempt ${attempt}"
-              exit 0
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              echo "Deployment failed, retrying in 30s..."
-              sleep 30
-            fi
-          done
-          echo "Deployment failed after 3 attempts"
-          exit 1
+          func azure functionapp publish "${FUNCTION_APP_NAME}" --python --build local
 
       - name: Print Function App URL
         run: |

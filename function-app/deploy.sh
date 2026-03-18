@@ -56,7 +56,7 @@ fi
 
 # Build and publish function
 echo -e "\n${GREEN}Publishing function app...${NC}"
-func azure functionapp publish "${FUNCTION_APP_NAME}" --python
+func azure functionapp publish "${FUNCTION_APP_NAME}" --python --build local
 
 echo -e "\n${GREEN}=== Deployment Complete ===${NC}"
 echo -e "${YELLOW}Function App URL: https://${FUNCTION_APP_NAME}.azurewebsites.net${NC}"

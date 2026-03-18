@@ -106,7 +106,7 @@ Deploys Azure Function App with blob trigger for automatic document processing.
 - **Storage Account** (for Function App internals - separate from data storage)
 - **Application Insights** (monitoring and telemetry)
 - **App Service Plan** (Consumption/Y1 - serverless, pay-per-execution)
-- **Linux Function App** (Python 3.11 runtime)
+- **Linux Function App** (Python 3.12 runtime)
 - **RBAC Role Assignments**:
   - Storage Blob Data Contributor on data storage
   - Cognitive Services User on Document Intelligence

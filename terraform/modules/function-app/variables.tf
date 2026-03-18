@@ -42,7 +42,7 @@ variable "sku_name" {
 variable "python_version" {
   description = "Python version for Function App"
   type        = string
-  default     = "3.11"
+  default     = "3.12"
 }
 
 variable "data_storage_connection_string" {
