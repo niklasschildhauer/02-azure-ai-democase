@@ -193,6 +193,19 @@ jobs:
           export AZURE_OPENAI_ENDPOINT="${OPENAI_ENDPOINT}"
           export AZURE_AI_SERVICES_ENDPOINT="${AI_SERVICES_ENDPOINT}"
 
+          # Wait for Search endpoint to become reachable (max 3 minutes)
+          echo "Waiting for Search endpoint to become reachable..."
+          SEARCH_HOST=$(echo "${SEARCH_ENDPOINT}" | sed 's|https://||')
+          for i in $(seq 1 18); do
+            if curl -sf --max-time 5 "${SEARCH_ENDPOINT}/indexes?api-version=2024-11-01-preview" \
+                -H "api-key: ${SEARCH_ADMIN_KEY}" -o /dev/null; then
+              echo "Search endpoint is ready."
+              break
+            fi
+            echo "  Attempt ${i}/18 — not ready yet, retrying in 10s..."
+            sleep 10
+          done
+
           cd ${{ github.workspace }}
           python search-setup/setup_search_index.py
 
