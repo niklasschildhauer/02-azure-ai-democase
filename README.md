@@ -251,6 +251,12 @@ Navigate to your Storage Account in the Azure Portal > **Containers** > `terms-a
 ![](images/upload_documents_1.png)
 ![](images/upload_documents_2.png)
 
+#### Upload the claims:
+
+Navigate to your Storage Account in the Azure Portal > **Containers** > `insurance-claims` and upload your the claims data.
+
+![](images/upload_insurance_claims.png)
+
 ### Verification
 
 #### Test the claim processing pipeline:
@@ -258,8 +264,20 @@ Navigate to your Storage Account in the Azure Portal > **Containers** > `terms-a
 1. Navigate to your Storage Account in the Azure Portal > **Containers** > `insurance-claims`
 2. Click **Upload** and select a sample claim PDF from `sample-data/claims/` (e.g. `suspicious-claim.pdf`)
 3. After ~30 seconds, check the `processed-data` container — a JSON file with the Document Intelligence extraction results should appear
+
+![](images/claims_processed_blob_info.png)
+
+![](images/claims_processed_data.png)
+
+
 4. After ~60 seconds, check the `model-analysis-results` container — a JSON file with the GPT fraud risk assessment should appear
+
+![](images/claims_analysis_folder.png)
+
 5. Click on the result blob > **Edit** to view the analysis inline
+
+![](images/claims_analysis_result.png)
+
 
 #### Test the RAG chatbot:
 
@@ -269,6 +287,7 @@ Open the Bot Service in the Azure Portal > **Test in Web Chat** and ask a questi
 ![](images/testing_web_chat_2.png)
 ![](images/testing_web_chat_3.png)
 ![](images/testing_web_chat_4.png)
+
 
 
 
