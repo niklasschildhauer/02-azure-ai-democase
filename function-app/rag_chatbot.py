@@ -71,6 +71,8 @@ def search_terms_and_conditions(query: str) -> str:
         chunk = result.get("chunk", "")
         context_parts.append(f"[Source {i}: {title}]\n{chunk}")
 
+    print(context_parts)
+
     return "\n\n---\n\n".join(context_parts) if context_parts else ""
 
 
@@ -106,6 +108,8 @@ def get_rag_response(user_message: str) -> str:
         messages=messages,
         max_completion_tokens=1024,
     )
+
+    print(response)
 
     return response.choices[0].message.content
 
