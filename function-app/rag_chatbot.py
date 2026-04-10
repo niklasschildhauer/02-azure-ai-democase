@@ -153,6 +153,8 @@ def _process_and_reply(body, user_text):
     conversation_id = body.get("conversation", {}).get("id", "")
     if service_url and conversation_id:
         _send_bot_reply(service_url, conversation_id, reply)
+    else:
+        logging.error("Missing serviceUrl or conversationId; cannot send reply.")
 
 
 @bp.route(route="messages", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
