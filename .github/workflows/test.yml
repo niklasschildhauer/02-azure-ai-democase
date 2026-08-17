@@ -24,6 +24,7 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Get PR branch
+
         id: pr
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
